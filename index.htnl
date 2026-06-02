@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Product Input</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 440px;
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      outline: none;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+
+    button {
+      width: 100%;
+      padding: 11px;
+      font-size: 15px;
+      font-weight: 500;
+      background-color: #4f46e5;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    button:hover {
+      background-color: #4338ca;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    #statusMsg {
+      margin-top: 1rem;
+      font-size: 13px;
+      text-align: center;
+      min-height: 20px;
+    }
+
+    .success {
+      color: #16a34a;
+    }
+
+    .error {
+      color: #dc2626;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Enter Product Name</h2>
+    <label for="productName">Product name</label>
+    <input type="text" id="productName" placeholder="e.g. Dabur Honey" />
+    <button onclick="submitForm()">Submit</button>
+    <div id="statusMsg"></div>
+  </div>
+
+  <script>
+    document.getElementById('productName').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') submitForm();
+    });
+
+    async function submitForm() {
+      const productName = document.getElementById('productName').value.trim();
+      const statusMsg = document.getElementById('statusMsg');
+
+      if (!productName) {
+        statusMsg.textContent = 'Please enter a product name.';
+        statusMsg.className = 'error';
+        return;
+      }
+
+      statusMsg.textContent = 'Submitting...';
+      statusMsg.className = '';
+
+      try {
+        const response = await fetch('https://prashantsharma2026.app.n8n.cloud/webhook/product-input', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ productName: productName })
+        });
+
+        const text = await response.text();
+        console.log('Response:', text);
+
+        if (!response.ok) {
+          throw new Error('HTTP ' + response.status + ' ' + text);
+        }
+
+        statusMsg.textContent = '✓ Submitted successfully!';
+        statusMsg.className = 'success';
+        document.getElementById('productName').value = '';
+
+      } catch (error) {
+        console.error(error);
+        statusMsg.textContent = 'Submission failed: ' + error.message;
+        statusMsg.className = 'error';
+      }
+    }
+  </script>
+
+</body>
+</html>
