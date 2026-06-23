@@ -299,8 +299,8 @@
 
     <div class="container">
         <div class="logo-section">
-            <!-- Dabur Logo (using a placeholder URL - replace with your actual logo path) -->
-            <img src="/logo.png" alt="Dabur Logo" class="dabur-logo">
+            <!-- Dabur Logo: if /logo.png is missing on the deployed host, this hides gracefully instead of showing a broken-image icon -->
+            <img src="/logo.png" alt="Dabur Logo" class="dabur-logo" onerror="this.style.display='none'">
             <h1 class="portal-title">My Dabur Portal</h1>
             <p class="welcome-text">Empowering Naturally, Innovating Digitally</p>
         </div>
@@ -318,55 +318,55 @@
 
     <script>
         // Trigger submit on Enter key
-        document.getElementById('productName').addEventListener('keydown', function(e) {
+        document.getElementById('productName').addEventListener('keydown', function (e) {
             if (e.key === 'Enter') submitForm();
         });
 
-     async function submitForm() {
-    const productName = document.getElementById('productName').value.trim();
-    const statusMsg = document.getElementById('statusMsg');
-    const submitBtn = document.getElementById('submitBtn');
+        async function submitForm() {
+            const productName = document.getElementById('productName').value.trim();
+            const statusMsg = document.getElementById('statusMsg');
+            const submitBtn = document.getElementById('submitBtn');
 
-    if (!productName) {
-        statusMsg.textContent = '⚠ Please enter a product name.';
-        statusMsg.className = 'error';
-        return;
-    }
+            if (!productName) {
+                statusMsg.textContent = '⚠ Please enter a product name.';
+                statusMsg.className = 'error';
+                return;
+            }
 
-    statusMsg.textContent = '⏳ Submitting your request...';
-    statusMsg.className = 'loading';
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting...';
+            statusMsg.textContent = '⏳ Submitting your request...';
+            statusMsg.className = 'loading';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
 
-    try {
-        const response = await fetch('https://priyanshsharma2026.app.n8n.cloud/webhook/product-input', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ productName: productName })
-        });
+            try {
+                const response = await fetch('https://priyanshsharma2026.app.n8n.cloud/webhook/product-input', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ productName: productName })
+                });
 
-        const text = await response.text();
-        console.log('Response:', text);
+                const text = await response.text();
+                console.log('Response:', text);
 
-        if (!response.ok) {
-            throw new Error('HTTP ' + response.status + ' ' + text);
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status + ' ' + text);
+                }
+
+                statusMsg.textContent = '✓ Submitted successfully!';
+                statusMsg.className = 'success';
+                document.getElementById('productName').value = '';
+
+            } catch (error) {
+                console.error(error);
+                statusMsg.textContent = '✗ Submission failed: ' + error.message;
+                statusMsg.className = 'error';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Product';
+            }
         }
-
-        statusMsg.textContent = '✓ Submitted successfully!';
-        statusMsg.className = 'success';
-        document.getElementById('productName').value = '';
-
-    } catch (error) {
-        console.error(error);
-        statusMsg.textContent = '✗ Submission failed: ' + error.message;
-        statusMsg.className = 'error';
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit Product';
-    }
-}
     </script>
 </body>
 </html>
